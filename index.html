@@ -1,0 +1,51 @@
+<html>
+    <head>
+        <title>ROEA Dashboard</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="css/dc.css"/>
+        <link rel="stylesheet" type="text/css" href="css/leaflet.css"/>
+        <link rel="stylesheet" type="text/css" href="css/site.css"/>
+        <script src="js/jquery.js"></script>
+        <script src="js/d3.min.js"></script>
+        <script src="js/crossfilter.v1.min.js"></script>
+        <script src="js/dc.js"></script>
+        <script src="js/leaflet.js"></script>
+        <script src="js/dc.leaflet.js"></script>     
+    </head>
+    <body>
+        <div id="hdx-roea" class="container">
+            <div class="row">
+                <p>Use the tabs to browse the different risk indexes for the region. 1 is low risk (lighter) and 10 is high risk (darker).  Click the map to filter the statistics for selected countries.</p>
+            </div>
+            <div class="row">
+                <div class="col-xs-4">
+                    <div class="hdx-roea-viz" id="hdx-roea-numbers">
+                        <div class="hdx-roea-number">
+                            <div class="hdx-roea-title">Funding</div>
+                            <div id="hdx-roea-funding"></div>
+                        </div>
+                        <div class="hdx-roea-number">
+                            <div class="hdx-roea-title">Refugees</div>
+                            <div id="hdx-roea-refugees"></div>
+                        </div>
+                        <div class="hdx-roea-number">
+                            <div class="hdx-roea-title">IDPs</div>
+                            <div id="hdx-roea-idps"></div>
+                        </div>
+                        <div class="hdx-roea-number">
+                            <div class="hdx-roea-title">Food insecure</div>
+                            <div id="hdx-roea-food"></div>
+                        </div>
+                    </div>                            
+                </div>
+                <div class="col-xs-8">
+                    <div><div id="overall" class="hdx-roea-active tab">Overall</div><div id="hazard" class="hdx-roea-inactive tab">Hazard</div><div id="vulnerability" class="hdx-roea-inactive tab">Vulnerability</div><div id="coping" class="hdx-roea-inactive tab">Coping</div></div>
+                    <div class="hdx-roea-viz" id="hdx-roea-where"></div>                            
+                </div>
+            </div>                                     
+        </div>              
+        <script src="js/site.js"></script> 
+    </body>
+</html>
