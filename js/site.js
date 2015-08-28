@@ -1,7 +1,9 @@
 var config = {
     dataURL:'data/data.json',
     geoURL:'data/geom.geojson',
-    colors:['#FFFFFF','#BFDAEC','#80B5DA','#4190C7','#026BB5']
+    colors:['#FFFFFF','#BFDAEC','#80B5DA','#4190C7','#026BB5'],
+    source:'Text Source',
+    link:'http://linktodata'
 }
 
 function generateROEADashboard(config,data,geom){
@@ -54,77 +56,55 @@ function generateROEADashboard(config,data,geom){
         })
         .renderPopup(true);
 
+    var formatNumber = function(d){
+            var output = d3.format(".4s")(d);
+            if(output.slice(-1)=='k'){
+                output = '<span class="hdx-roea-value">'+d3.format("0,000")(output.slice(0, -1) * 1000)+'</span>';
+            } else if(output.slice(-1)=='M'){
+                output = '<span class="hdx-roea-value">'+d3.format(".1f")(output.slice(0, -1))+'</span><span class="hdx-roea-small"> million</span>';
+            } else if (output.slice(-1) == 'G') {
+                output = '<span class="hdx-roea-value">' + output.slice(0, -1) + '</span><span class="hdx-roea-small"> billion</span>';
+            } else {
+                output = '<span class="hdx-roea-value">'+d3.format(".3s")(d)+'</span>';
+            }            
+            return output;
+    }
+        
+    var formatNumberDollar = function(d){
+        return '<span class="hdx-roea-small">$</span>'+formatNumber(d);
+    }
+
     var fundingND = dc.numberDisplay("#hdx-roea-funding")
         .valueAccessor(function(d){
             return d;
         })
-        .formatNumber(function(d){
-            var output = d3.format(".3s")(d);
-            if(output.slice(-1)=='k'){
-                output = '<span class="hdx-roea-value">'+d3.format("0,000")(output.slice(0, -1) * 1000)+'</span>';
-            } else if(output.slice(-1)=='M'){
-                output = '<span class="hdx-roea-value">'+output.slice(0, -1)+'</span><span class="hdx-roea-small"> million</span>';
-            } else {
-                output = '<span class="hdx-roea-value">'+d3.format(".3s")(d)+'</span>';
-            }            
-            return '<span class="hdx-roea-small">$</span>'+output;
-        })                                
+        .formatNumber(formatNumberDollar)                                
         .group(fundingGroup);
 
     var refugeesND = dc.numberDisplay("#hdx-roea-refugees")
         .valueAccessor(function(d){
             return d;
         })
-        .formatNumber(function(d){
-            var output = d3.format(".3s")(d);
-            if(output.slice(-1)=='k'){
-                output = '<span class="hdx-roea-value">'+d3.format("0,000")(output.slice(0, -1) * 1000)+'</span>';
-            } else if(output.slice(-1)=='M'){
-                output = '<span class="hdx-roea-value">'+output.slice(0, -1)+'</span><span class="hdx-roea-small"> million</span>';
-            } else {
-                output = '<span class="hdx-roea-value">'+d3.format(".3s")(d)+'</span>';
-            }            
-            return output;
-        })             
+        .formatNumber(formatNumber)             
         .group(refugeesGroup);
 
     var ipdsND = dc.numberDisplay("#hdx-roea-idps")
         .valueAccessor(function(d){
             return d;
         })
-        .formatNumber(function(d){
-            var output = d3.format(".3s")(d);
-            if(output.slice(-1)=='k'){
-                output = '<span class="hdx-roea-value">'+d3.format("0,000")(output.slice(0, -1) * 1000)+'</span>';
-            } else if(output.slice(-1)=='M'){
-                output = '<span class="hdx-roea-value">'+output.slice(0, -1)+'</span><span class="hdx-roea-small"> million</span>';
-            } else {
-                output = '<span class="hdx-roea-value">'+d3.format(".3s")(d)+'</span>';
-            }            
-            return output;
-        })                
+        .formatNumber(formatNumber)                
         .group(idpsGroup);
 
     var fsND = dc.numberDisplay("#hdx-roea-food")
         .valueAccessor(function(d){
             return d;
         })
-        .formatNumber(function(d){
-            var output = d3.format(".3s")(d);
-            if(output.slice(-1)=='k'){
-                output = '<span class="hdx-roea-value">'+d3.format("0,000")(output.slice(0, -1) * 1000)+'</span>';
-            } else if(output.slice(-1)=='M'){
-                output = '<span class="hdx-roea-value">'+output.slice(0, -1)+'</span><span class="hdx-roea-small"> million</span>';
-            } else {
-                output = '<span class="hdx-roea-value">'+d3.format(".3s")(d)+'</span>';
-            }            
-            return output;
-        })        
+        .formatNumber(formatNumber)        
         .group(fsGroup);                        
 
     dc.renderAll();
 
-    var map = mapChart.map();
+    map = mapChart.map();
     map.scrollWheelZoom.disable();
     zoomToGeom(geom);
 
@@ -166,12 +146,22 @@ function generateROEADashboard(config,data,geom){
 
     $('.hdx-3w-info').css('color',config.colors[4]);
 
-    function zoomToGeom(geom){
-        var bounds = d3.geo.bounds(geom);
-        map.fitBounds([[bounds[0][1],bounds[0][0]],[bounds[1][1],bounds[1][0]]]);
-    }    
+    
 }
 
+function zoomToGeom(geom){
+    var bounds = d3.geo.bounds(geom);
+    map.fitBounds([[bounds[0][1],bounds[0][0]],[bounds[1][1],bounds[1][0]]]);
+}
+
+function reset(){
+    dc.filterAll();
+    dc.redrawAll();
+    zoomToGeom(geom);
+}
+
+var map;
+var geom;
 
 //load data
 
@@ -192,5 +182,10 @@ var geomCall = $.ajax({
 //when both ready construct dashboard
 
 $.when(dataCall, geomCall).then(function(dataArgs, geomArgs){
+    geom = geomArgs[0];
     generateROEADashboard(config,dataArgs[0],geomArgs[0]);
 });
+
+$("#hdx-roea-datalink").html(config.source+' <a href="'+config.link+'">Data</a></p>');
+
+$('#reset').click(function(){reset();});
