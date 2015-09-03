@@ -59,7 +59,8 @@ function generateROEADashboard(config,data,geom){
     var formatNumber = function(d){
             var output = d3.format(".4s")(d);
             if(output.slice(-1)=='k'){
-                output = '<span class="hdx-roea-value">'+d3.format("0,000")(output.slice(0, -1) * 1000)+'</span>';
+                output = Math.round(output.slice(0, -1) * 1000);
+                output = '<span class="hdx-roea-value">'+d3.format("0,000")(output)+'</span>';
             } else if(output.slice(-1)=='M'){
                 output = '<span class="hdx-roea-value">'+d3.format(".1f")(output.slice(0, -1))+'</span><span class="hdx-roea-small"> million</span>';
             } else if (output.slice(-1) == 'G') {
